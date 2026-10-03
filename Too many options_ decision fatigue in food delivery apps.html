@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Too many options: decision fatigue in food delivery apps</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Figtree:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --turmeric:#F2B33D; --curry:#3B1F14; --chili:#C8341F; --mint:#2F8F6B;
+  --paper:#FFFFFF; --page:#FBF7EF; --ink:#2A1A12; --muted:#6E5A4E; --rule:#E7DCCB; --track:#F1E8D9;
+  --chip:#FFFFFF; --chip-ink:#6E5A4E;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --page:#1C130E; --paper:#261A13; --ink:#F6ECDF; --muted:#BFAA98; --rule:#3E2D22; --track:#33251C;
+    --turmeric:#E9A92F; --chili:#E8573F; --mint:#4DB38C; --chip:#2E2017; --chip-ink:#BFAA98;
+  }
+}
+:root[data-theme="dark"]{
+  --page:#1C130E; --paper:#261A13; --ink:#F6ECDF; --muted:#BFAA98; --rule:#3E2D22; --track:#33251C;
+  --turmeric:#E9A92F; --chili:#E8573F; --mint:#4DB38C; --chip:#2E2017; --chip-ink:#BFAA98;
+}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*,*::before,*::after{box-sizing:inherit}
+body{margin:0;background:var(--page);color:var(--ink);font-family:Figtree,system-ui,-apple-system,"Segoe UI",sans-serif;font-size:1.0625rem;line-height:1.55}
+:focus-visible{outline:3px solid var(--chili);outline-offset:3px;border-radius:4px}
+
+/* HERO: a wall of options */
+.hero{position:relative;overflow:hidden;background:var(--turmeric);min-height:min(88vh,760px);display:flex;align-items:center;padding:3rem 1.25rem}
+.wall{position:absolute;inset:-10% -5%;display:flex;flex-direction:column;gap:10px;transform:rotate(-6deg);pointer-events:none}
+.wall .row{display:flex;gap:10px;white-space:nowrap;animation:drift 70s linear infinite}
+.wall .row:nth-child(even){animation-direction:reverse;animation-duration:90s}
+.wall span{flex:none;background:var(--chip);color:var(--chip-ink);border-radius:999px;padding:.45rem .95rem;font-size:.95rem;font-weight:500;opacity:.9}
+@keyframes drift{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+@media (prefers-reduced-motion:reduce){.wall .row{animation:none}}
+.hero-card{position:relative;max-width:1080px;margin:0 auto;width:100%}
+.hero-card .inner{background:var(--curry);color:#F6ECDF;max-width:640px;padding:clamp(1.75rem,4vw,2.75rem);border-radius:20px;box-shadow:0 24px 60px rgba(59,31,20,.35)}
+.source{font-size:.9rem;margin:0 0 1rem;color:#D9C7B4}
+h1{font-family:"Bricolage Grotesque",Figtree,sans-serif;font-weight:800;font-size:clamp(2.4rem,6vw,4.25rem);line-height:.96;letter-spacing:-.03em;margin:0 0 1.25rem}
+.lede{font-size:clamp(1.05rem,1.6vw,1.18rem);margin:0;color:#EADBCB;max-width:34em}
+
+main{max-width:1080px;margin:0 auto;padding:0 1.25rem 4rem}
+section{padding:clamp(3rem,6vw,4.5rem) 0 0}
+.sec-head{max-width:42em;margin-bottom:2rem}
+h2.t{font-family:"Bricolage Grotesque",Figtree,sans-serif;font-weight:700;font-size:clamp(1.75rem,3.6vw,2.5rem);line-height:1.05;letter-spacing:-.02em;margin:0 0 .7rem}
+.sec-head p{color:var(--muted);margin:0 0 .7rem}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));gap:1.25rem}
+.panel{background:var(--paper);border:1px solid var(--rule);border-radius:14px;padding:1.4rem 1.4rem 1.5rem}
+.panel h3{font-size:1.02rem;font-weight:600;margin:0 0 1rem;line-height:1.3}
+.panel p{margin:0}
+.note{font-size:.88rem;color:var(--muted);margin:1rem 0 0 !important}
+
+.bars{list-style:none;margin:0;padding:0;display:grid;gap:.7rem}
+.bar{display:grid;grid-template-columns:7.5rem 1fr 3rem;align-items:center;gap:.6rem;font-size:.95rem}
+.bar .track{height:14px;background:var(--track);border-radius:7px;overflow:hidden}
+.bar .fill{height:100%;width:var(--w);background:var(--c,var(--chili));border-radius:7px}
+.bar .v{text-align:right;font-variant-numeric:tabular-nums;font-weight:600}
+
+/* overload split */
+.overload{display:grid;grid-template-columns:.9fr 1.1fr;gap:1.25rem;align-items:stretch}
+.big{background:var(--chili);color:#FFF6EC;border-radius:18px;padding:clamp(1.5rem,4vw,2.5rem);display:flex;flex-direction:column;justify-content:space-between;gap:2rem}
+.big b{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:clamp(5rem,13vw,8.5rem);line-height:.85;letter-spacing:-.05em}
+.big p{margin:0;font-size:1.1rem;max-width:20em}
+
+/* clock */
+.clock{display:grid;grid-template-columns:repeat(24,1fr);gap:3px;margin:.5rem 0 .6rem}
+.clock i{height:56px;border-radius:4px;background:var(--track)}
+.clock i.l{background:var(--mint);opacity:.75}
+.clock i.d{background:var(--chili)}
+.clock i.n{background:var(--curry)}
+:root[data-theme="dark"] .clock i.n{background:#8A5A40}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .clock i.n{background:#8A5A40}}
+.clock-labels{display:flex;justify-content:space-between;font-size:.8rem;color:var(--muted)}
+.legend{display:flex;flex-wrap:wrap;gap:1rem 1.5rem;margin-top:1rem;font-size:.95rem}
+.legend span::before{content:"";display:inline-block;width:.8rem;height:.8rem;border-radius:3px;margin-right:.45rem;vertical-align:-1px;background:var(--k)}
+
+/* shortcuts */
+.ladder{list-style:none;margin:0;padding:0;counter-reset:s;display:grid;gap:0;border-top:2px solid var(--ink)}
+.ladder li{counter-increment:s;display:grid;grid-template-columns:2.5rem 1fr;gap:1rem;padding:1.15rem 0;border-bottom:1px solid var(--rule)}
+.ladder li::before{content:counter(s);font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:1.6rem;line-height:1;color:var(--chili)}
+.ladder strong{display:block;font-size:1.08rem}
+.ladder span{color:var(--muted);font-size:.97rem}
+
+.sway{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,210px),1fr));border-top:2px solid var(--ink)}
+.sway div{padding:1.25rem 1rem 1.25rem 0;border-bottom:1px solid var(--rule)}
+.sway b{display:block;font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:2.6rem;line-height:1;color:var(--chili);letter-spacing:-.02em}
+.sway span{display:block;margin-top:.4rem;font-size:.95rem;max-width:18em}
+
+/* calculator */
+.calc{background:var(--curry);color:#F6ECDF;border-radius:18px;padding:clamp(1.5rem,4vw,2.5rem);display:grid;grid-template-columns:1fr 1fr;gap:2rem;align-items:center}
+:root[data-theme="dark"] .calc{background:#3A241A}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .calc{background:#3A241A}}
+.calc h2.t{color:#F6ECDF}
+.calc p{color:#E3D3C2;margin:0 0 .8rem}
+.calc label{display:block;font-weight:600;margin:1.1rem 0 .4rem}
+.calc input[type=range]{width:100%;accent-color:var(--turmeric)}
+.calc output{font-variant-numeric:tabular-nums}
+.result{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:clamp(3.5rem,9vw,5.5rem);line-height:.9;color:var(--turmeric);letter-spacing:-.04em}
+.result-sub{font-size:1.05rem;color:#F6ECDF;margin-top:.6rem}
+.calc .fine{font-size:.85rem;color:#CDBBA8;margin-top:1rem}
+
+.two{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));gap:1.25rem}
+.ideas{list-style:none;margin:0;padding:0;display:grid;gap:1rem}
+.ideas li{padding-left:1rem;border-left:3px solid var(--turmeric)}
+.ideas strong{display:block}
+.ideas span{color:var(--muted);font-size:.97rem}
+
+.ref{font-size:.88rem;color:var(--muted);border-top:1px solid var(--rule);margin-top:3.5rem;padding-top:1.5rem;max-width:60em}
+
+@media (max-width:820px){.overload,.calc{grid-template-columns:1fr}}
+@media (max-width:420px){.bar{grid-template-columns:6rem 1fr 2.6rem}.clock i{height:40px}}
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="wall" id="wall" aria-hidden="true"></div>
+  <div class="hero-card">
+    <div class="inner">
+      <p class="source">Read through the lens of Vaidya, Patil &amp; Vaidya (2025), IJIRT Vol. 11, Issue 9 · 943 college students</p>
+      <h1>Too many options, too little energy left to choose</h1>
+      <p class="lede">Three in four students say food delivery apps overwhelm them with choice. Here's what the survey shows about how they get stuck, when it happens, and the shortcuts they use to get out.</p>
+    </div>
+  </div>
+</header>
+
+<main>
+
+  <section aria-labelledby="overload">
+    <div class="sec-head">
+      <h2 class="t" id="overload">The overload is real</h2>
+      <p>Most students don't pick quickly. Half spend 10 to 20 minutes scrolling, and one in five spends over 20, often longer than the delivery itself takes to arrive.</p>
+    </div>
+    <div class="overload">
+      <div class="big">
+        <b>76%</b>
+        <p>feel overwhelmed by the number of food options in delivery apps.</p>
+      </div>
+      <div class="panel">
+        <h3>Time spent browsing before ordering</h3>
+        <ul class="bars">
+          <li class="bar"><span>Under 10 min</span><span class="track"><span class="fill" style="--w:27%;--c:var(--mint)"></span></span><span class="v">27%</span></li>
+          <li class="bar"><span>10–20 min</span><span class="track"><span class="fill" style="--w:52%;--c:var(--turmeric)"></span></span><span class="v">52%</span></li>
+          <li class="bar"><span>20–30 min</span><span class="track"><span class="fill" style="--w:16%"></span></span><span class="v">16%</span></li>
+          <li class="bar"><span>Over 30 min</span><span class="track"><span class="fill" style="--w:5%"></span></span><span class="v">5%</span></li>
+        </ul>
+        <p class="note">Using the midpoint of each range, the average works out to roughly 15 minutes of browsing per order. This is an estimate; the paper reports only the ranges.</p>
+        <ul class="bars" style="margin-top:1.4rem">
+          <li class="bar"><span>Use 2+ apps</span><span class="track"><span class="fill" style="--w:51%;--c:var(--curry)"></span></span><span class="v">51%</span></li>
+          <li class="bar"><span>Browse when not hungry</span><span class="track"><span class="fill" style="--w:50%;--c:var(--curry)"></span></span><span class="v">50%</span></li>
+        </ul>
+        <p class="note">Switching between apps multiplies the menu. Browsing without hunger suggests the scrolling itself has become a habit.</p>
+      </div>
+    </div>
+  </section>
+
+  <section aria-labelledby="when">
+    <div class="sec-head">
+      <h2 class="t" id="when">The choosing happens at the end of the day</h2>
+      <p>Eight in ten orders come at dinner or late at night, after a full day of classes, assignments and small decisions. That is exactly when decision fatigue theory predicts people have the least capacity to weigh options carefully.</p>
+    </div>
+    <div class="panel">
+      <h3>When students usually order</h3>
+      <div class="clock" aria-hidden="true" id="clock"></div>
+      <div class="clock-labels" aria-hidden="true"><span>12 am</span><span>6 am</span><span>12 pm</span><span>6 pm</span><span>12 am</span></div>
+      <div class="legend">
+        <span style="--k:var(--mint)">Lunch · 20%</span>
+        <span style="--k:var(--chili)">Dinner · 60%</span>
+        <span style="--k:var(--curry)">Late night · 20%</span>
+      </div>
+      <p class="note">Time bands are illustrative; the survey asked about meal slots, not exact hours. The paper doesn't test whether evening orderers browse longer, so this link is a hypothesis the data fits, not something it proves.</p>
+    </div>
+  </section>
+
+  <section aria-labelledby="short">
+    <div class="sec-head">
+      <h2 class="t" id="short">How students cut through the noise</h2>
+      <p>Faced with too much choice, people lean on mental shortcuts. The survey's findings read like a list of them. When trying a new restaurant or dish, students rank their deciding factors in this order:</p>
+    </div>
+    <div class="two">
+      <ol class="ladder">
+        <li><div><strong>Recommendations from others</strong><span>Outsourcing the decision to someone they trust.</span></div></li>
+        <li><div><strong>Good discounts</strong><span>A price signal that narrows the field instantly.</span></div></li>
+        <li><div><strong>Customer reviews</strong><span>Crowd judgment as a stand-in for their own research.</span></div></li>
+        <li><div><strong>Social media posts and reels</strong><span>A craving arrives pre-decided before the app is even open.</span></div></li>
+      </ol>
+      <div class="panel">
+        <h3>Other shortcuts in the data</h3>
+        <ul class="ideas">
+          <li><strong>Pictures over menus</strong><span>77% say food photos in the app shape what they order.</span></li>
+          <li><strong>Cravings set by video</strong><span>59% say reels and shorts trigger cravings.</span></li>
+          <li><strong>Sticking to the familiar</strong><span>Fast food and Indian top the list: safe, known categories that need little thought.</span></li>
+          <li><strong>A default order size</strong><span>54% order exactly two items, a stable habit rather than a fresh calculation each time.</span></li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section aria-labelledby="cost">
+    <div class="sec-head">
+      <h2 class="t" id="cost">What tired decisions cost</h2>
+      <p>When willpower is low, the easier choice usually wins: the indulgent one, the one with extra items, the one that skips the healthy option.</p>
+    </div>
+    <div class="sway">
+      <div><b>80%</b><span>think the apps make it easy to overspend</span></div>
+      <div><b>57%</b><span>are no more likely to pick healthier food via apps than when dining out</span></div>
+      <div><b>53%</b><span>see ordering in as a treat, plus 31% who say "sometimes"</span></div>
+      <div><b>21%</b><span>usually spend more than ₹500 per order</span></div>
+    </div>
+    <p class="note" style="max-width:42em">The paper cites Capito &amp; Pergelova (2023), who found people justify app orders partly through "food fatigue": being tired of deciding what to eat and cooking it. Ordering in can itself be a way to escape a decision.</p>
+  </section>
+
+  <section aria-labelledby="calcT">
+    <div class="calc">
+      <div>
+        <h2 class="t" id="calcT">How much time goes into choosing?</h2>
+        <p>Move the sliders to see the browsing time over a semester, based on the survey's average of roughly 15 minutes per order.</p>
+        <label for="perWeek">Orders per week: <output id="perWeekOut">3</output></label>
+        <input type="range" id="perWeek" min="1" max="14" value="3">
+        <label for="minutes">Minutes browsing per order: <output id="minutesOut">15</output></label>
+        <input type="range" id="minutes" min="5" max="40" step="5" value="15">
+      </div>
+      <div aria-live="polite">
+        <div class="result" id="hours">12 hrs</div>
+        <div class="result-sub" id="hoursSub">spent scrolling menus over a 16-week semester</div>
+        <p class="fine">A simple multiplication for illustration, not a survey finding.</p>
+      </div>
+    </div>
+  </section>
+
+  <section aria-labelledby="design">
+    <div class="sec-head">
+      <h2 class="t" id="design">Designing for a tired chooser</h2>
+      <p>If overload is the problem, fewer and better-framed choices are the fix. These ideas follow from the survey's findings; none were tested in the study.</p>
+    </div>
+    <div class="grid">
+      <div class="panel"><h3>Make reordering effortless</h3><p>Put last week's go-to order front and centre at dinner time, so the default choice takes one tap.</p></div>
+      <div class="panel"><h3>Surface friends' picks</h3><p>Recommendations rank first, so show what classmates or people nearby order rather than another endless list.</p></div>
+      <div class="panel"><h3>Offer short, curated lists</h3><p>Five strong options under ₹300 beats five hundred restaurants. A late-night mode with fewer, faster choices fits when most ordering happens.</p></div>
+      <div class="panel"><h3>Lead with photos</h3><p>Visuals already drive decisions for 77% of students. A clear photo shortens the path to a choice more than a long description.</p></div>
+    </div>
+  </section>
+
+  <section aria-labelledby="gaps">
+    <div class="sec-head">
+      <h2 class="t" id="gaps">What the study can't tell us yet</h2>
+      <p>The paper doesn't use the term decision fatigue or measure it directly. Feeling overwhelmed by many options is closer to choice overload; decision fatigue is about mental depletion from making many decisions in a row. The survey hints at both but separates neither. Research on willpower depletion has also had mixed replication results, so the theory itself is debated.</p>
+    </div>
+    <div class="panel">
+      <h3>Questions a follow-up study could ask</h3>
+      <ul class="ideas">
+        <li><strong>Does feeling overwhelmed go with longer browsing or higher spend?</strong><span>The paper reports each separately but not how they relate.</span></li>
+        <li><strong>Do evening orders take longer to decide than lunch orders?</strong><span>This would test the end-of-day pattern directly.</span></li>
+        <li><strong>How often do students give up without ordering?</strong><span>Abandoned sessions are the clearest sign of overload.</span></li>
+        <li><strong>How often do they reorder the same thing?</strong><span>Repeat orders show how much people rely on defaults.</span></li>
+        <li><strong>Does using more apps make the overwhelm worse?</strong><span>With half on two or more apps, the choice set may be larger than any single app suggests.</span></li>
+      </ul>
+    </div>
+    <p class="ref">Source: Vaidya, A., Patil, A., &amp; Vaidya, A. (2025). Food Delivery Apps in India: A Glimpse into Adoption Patterns, Influences &amp; Usage Trends Among College Students. International Journal of Innovative Research in Technology, 11(9), 1577–1587. Sample: 943 students aged 18–21, convenience sampling. Other findings from the paper, such as students living alone having 4.36 times the odds of ordering frequently, are outside the scope of this page.</p>
+  </section>
+
+</main>
+
+<script>
+(function(){
+  var items=["Paneer tikka","Chicken biryani","Momos","Masala dosa","Veg burger","Margherita pizza","Hakka noodles","Butter chicken","Pav bhaji","Chole bhature","Shawarma","Vada pav","Pasta arrabbiata","Thali","Fried rice","Rolls","Idli sambar","Dal makhani","Manchurian","Sandwich","Falafel wrap","Cold coffee","Brownie","Misal pav","Tacos","Sushi bowl","Kathi roll","Pani puri","Rajma chawal","Waffles"];
+  var wall=document.getElementById('wall'),h='';
+  for(var r=0;r<14;r++){
+    var row='';
+    for(var k=0;k<2;k++){for(var i=0;i<items.length;i++){row+='<span>'+items[(i*7+r*5)%items.length]+'</span>';}}
+    h+='<div class="row">'+row+'</div>';
+  }
+  wall.innerHTML=h;
+
+  var clock=document.getElementById('clock'),c='';
+  for(var t=0;t<24;t++){
+    var cls=(t>=12&&t<=14)?'l':(t>=19&&t<=22)?'d':(t===23||t<=1)?'n':'';
+    c+='<i'+(cls?' class="'+cls+'"':'')+'></i>';
+  }
+  clock.innerHTML=c;
+
+  var pw=document.getElementById('perWeek'),mn=document.getElementById('minutes');
+  function upd(){
+    var mins=pw.value*mn.value*16, hrs=mins/60;
+    document.getElementById('perWeekOut').textContent=pw.value;
+    document.getElementById('minutesOut').textContent=mn.value;
+    document.getElementById('hours').textContent=(hrs<10?hrs.toFixed(1):Math.round(hrs))+' hrs';
+    document.getElementById('hoursSub').textContent='spent scrolling menus over a 16-week semester ('+Math.round(hrs/24*10)/10+' full days)';
+  }
+  pw.addEventListener('input',upd);mn.addEventListener('input',upd);upd();
+})();
+</script>
+</body>
+</html>
